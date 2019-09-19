@@ -1,5 +1,7 @@
 # redmine_project_specific_field
 
+Please dont use, it doesnt work yet without core hacks !!!
+
 Master branch will only run on 4.x
 
 
