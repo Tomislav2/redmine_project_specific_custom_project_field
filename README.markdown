@@ -1,6 +1,6 @@
 # redmine_project_specific_field
 
-Master branch will only run on 2.5+.  2.4.x and 2.3.x must use 2.4_branch.
+Master branch will only run on 4.x
 
 
 ## Overview
