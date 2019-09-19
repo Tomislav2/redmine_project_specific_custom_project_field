@@ -7,6 +7,10 @@ module ProjectSpecificFieldProjectPatch
     base.class_eval do
       alias_method :all_project_custom_fields_without_project_specific, :available_custom_fields
       alias_method :available_custom_fields, :all_project_custom_fields_with_project_specific
+=begin
+      alias_method :project_custom_field_value_without_custom_field_value, :custom_field_value
+      alias_method :custom_field_value, :project_custom_field_value_with_custom_field_value
+=end
       has_and_belongs_to_many :project_specific_project_custom_fields,
                               :class_name => 'ProjectCustomField',
                               :order => "#{CustomField.table_name}.position",
@@ -46,7 +50,14 @@ module ProjectSpecificFieldProjectPatch
     all_project_custom_fields ||= self.project_specific_project_custom_fields
     all_project_custom_fields
   end
-  
+
+=begin
+  def project_custom_field_value_with_custom_field_value
+    project_custom_field_value = project_custom_field_value_without_custom_field_value
+    project_custom_field_value ||= self.custom_field_value
+    project_custom_field_value
+  end
+=end
 end
 
 Project.send(:include, ProjectSpecificFieldProjectPatch) unless Project.included_modules.include? ProjectSpecificFieldProjectPatch

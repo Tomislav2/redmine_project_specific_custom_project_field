@@ -58,22 +58,6 @@ when "ProjectCustomField" %>
 <% end %>
 <%= call_hook(:"view_custom_fields_form_#{@custom_field.type.to_s.underscore}", :custom_field => @custom_field, :form => f) %>
 </div>
-
-<% if @custom_field.is_a?(ProjectCustomField) %>
-  <fieldset class="box" id="custom_field_tracker_ids"><legend><%=l(:label_tracker_plural)%></legend>
-  <% @project.trackers.sorted.each do |tracker| %>
-    <%= check_box_tag "project_custom_field[tracker_ids][]",
-                      tracker.id,
-                      (@custom_field.trackers.include? tracker),
-                      :id => "custom_field_tracker_ids_#{tracker.id}" %>
-    <label class="no-css" for="custom_field_tracker_ids_<%=tracker.id%>">
-      <%= h(tracker.name) %>
-    </label>
-  <% end %>
-  <%= hidden_field_tag "project_custom_field[tracker_ids][]", '' %>
-  <p><%= check_all_links 'custom_field_tracker_ids' %></p>
-  </fieldset>
-<% end %>
 </div>
 
 <% include_calendar_headers_tags %>

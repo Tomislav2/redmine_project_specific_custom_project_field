@@ -49,8 +49,8 @@
             <% end -%>
           </td>
         </tr>
-        <% @query.block_columns.each do |column|
-        if (text = column_content(column, entity)) && text.present? -%>
+        <% @query.block_columns.each do |column| -%>
+          <% if (text = column_content(column, entity)) && text.present? -%>
           <tr class="<%= current_cycle %>">
             <td colspan="<%= @query.inline_columns.size + 1 %>" class="<%= column.css_classes %>">
               <% if query.block_columns.count > 1 %>

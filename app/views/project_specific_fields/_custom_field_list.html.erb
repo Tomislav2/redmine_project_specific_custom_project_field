@@ -3,7 +3,7 @@
     <th width="30%"><%=l(:field_name)%></th>
     <th><%=l(:field_field_format)%></th>
     <th><%=l(:field_is_required)%></th>
-    <th style="display: none"><%=l(:button_sort)%></th>
+    <th style="display:none;width:15%;"><%=l(:button_sort)%></th>
     <%if User.current().allowed_to?(:delete_project_custom_fields, @project) %>
       <th width="10%"></th>
     <% end %>
@@ -11,21 +11,21 @@
   <tbody class="ui-sortable">
   <% (custom_fields || []).sort.each do |custom_field| -%>
     <tr class="<%= cycle("odd", "even") %>">
-      <% if custom_field.project == @project %>
-        <td><%= link_to h(custom_field.name), {:controller => :project_specific_fields, :action => 'edit', :id => custom_field} %></td>
+      <% if @project %>
+        <td><%= link_to h(custom_field.name), {:controller => :project_specific_fields, :action => 'edit', :id => custom_field, :project_id => @project[:id]} %></td>
         <td align="center"><%= l(custom_field.format.label) %></td>
         <td align="center"><%= checked_image custom_field.is_required? %></td>
-        <td align="center" style="display:none;width:15%;"><%= reorder_handle(custom_field,  url: url_for(:controller => :project_specific_fields, :action => 'update', :id => custom_field) ) %></td>
+        <td align="center" style="display:none;width:15%;"><%= reorder_handle(custom_field,  url: url_for(:controller => :project_specific_fields, :action => 'update', :id => custom_field, :project_id => @project[:id]) ) %></td>
         <%if User.current().allowed_to?(:delete_project_custom_fields, @project) %>
           <td class="buttons">
-            <%= delete_link :controller => :project_specific_fields, :action => :destroy, :id => custom_field %>
+            <%= delete_link :controller => :project_specific_fields, :action => :destroy, :id => custom_field, :project_id => @project[:id] %>
           </td>
         <% end %>
       <%else %>
         <td><%= h(custom_field.name) %></td>
         <td align="center"><%= l(custom_field.format.label) %></td>
         <td align="center"><%= checked_image custom_field.is_required? %></td>
-        <td align="center" style="width:15%;"></td>
+        <td align="center" style="display:none;width:15%;"></td>
         <%if User.current().allowed_to?(:delete_project_custom_fields, @project) %>
           <td></td>
         <% end %>

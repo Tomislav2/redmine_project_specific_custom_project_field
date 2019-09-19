@@ -73,12 +73,13 @@ class ProjectSpecificFieldsController < ApplicationController
     id = params[:id]
     @custom_field = ProjectCustomField.where(:id => id).first unless id.nil?
     return render_404 if @custom_field.nil?
-    @project = @custom_field.project
+    @project = self.find_project_by_project_id
     render_404 if @project.nil?
   end
   
-  def find_project
-    @project = Project.find(params[:id])
+  def find_project(project_id=nil)
+    project_id ||= id
+    @project = Project.find(project_id)
   end
   
   def authorize
@@ -104,7 +105,8 @@ class ProjectSpecificFieldsController < ApplicationController
         :is_filter,
         :possible_values,
         :role_ids => [],
-        :tracker_ids => []
+        :tracker_ids => [],
+        :project => nil
     ]).fetch(:project_custom_field, {}))
     if params[:project_custom_field]
       @custom_field.share_with_subprojects = params[:project_custom_field][:share_with_subprojects] # force the update to be manual

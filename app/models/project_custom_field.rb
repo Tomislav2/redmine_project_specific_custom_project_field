@@ -4,16 +4,15 @@ class ProjectCustomField < CustomField
   
   include Redmine::I18n
   
-  attr_accessor 'project'
-  attr_accessor 'share_with_subprojects'
+  attr_accessor :project_id
+  attr_accessor :share_with_subprojects
   
-  validates_presence_of :project
+  validates_presence_of 'project'
   after_initialize :initialize_project
   after_initialize :initialize_share_with_subproject
   after_create :create_projects
   after_save :update_share_with_subprojects
   has_one :project_specific_custom_fields_project, :dependent => :destroy, :foreign_key => 'custom_field_id'
-  has_and_belongs_to_many :trackers, :join_table => "#{table_name_prefix}custom_fields_trackers#{table_name_suffix}", :foreign_key => "custom_field_id"
 
   validate do
     #if we get an error that the name has already been taken, and it is the only name error,
