@@ -1,0 +1,21 @@
+
+<div class="contextual">
+  <% if User.current.allowed_to?(:add_project_specific_field_projects, @project, global: true) %>
+    <%= link_to l(:button_project_specific_field_project_new), new_project_specific_field_project_path, class: 'icon icon-add' %>
+  <% end %>
+</div>
+<h2><%= @query.queried_class.to_s %></h2>
+
+<%= form_tag(project_specific_field_projects_path, method: :get, id: 'query_form') do %>
+  <%= render partial: 'queries/query_form' %>
+<% end %>
+
+<% if @query.valid? %>
+  <% if @entities.empty? %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% else %>
+    <%= render_query_totals(@query) %>
+    <%= render partial: 'list', locals: { entities: @entities }%>
+    <span class="pagination"><%= pagination_links_full @entity_pages, @entity_count %></span>
+  <% end %>
+<% end %>

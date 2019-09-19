@@ -1,4 +1,26 @@
 # English strings go here for Rails i18n
 en:
-  label_project_specific_issue_custom_field_plural: Project Specific Custom Fields
+  label_project_specific_project_custom_field_plural: Project Specific Custom Fields
   field_share_with_subprojects: Share with subprojects
+  activerecord:
+    attributes:
+      project_specific_field_project:
+        name: Name
+        field_project_specific_field_project_project: Project
+        field_project_specific_field_project_author: Author
+        field_project_specific_field_project_created_at: Created at
+        field_project_specific_field_project_updated_at: Updated at
+  easy_query:
+    name:
+      project_specific_field_project_query: Project Specific Field Projects
+  heading_project_specific_field_project_new: New Project Specific Field Project
+  heading_project_specific_field_project_edit: Edit Project Specific Field Project
+  button_project_specific_field_project_new: New Project Specific Field Project
+  label_project_specific_field_projects: Project Specific Field Projects
+  label_project_specific_field_project: Project Specific Field Project
+  permission_view_project_specific_field_projects: View Project Specific Field Projects
+  permission_manage_project_specific_field_projects: Manage Project Specific Field
+    Projects
+  title_project_specific_field_project_new: Click to create new Project Specific Field
+    Project
+  label_filter_group_project_specific_field_project_query: ProjectSpecificFieldProject

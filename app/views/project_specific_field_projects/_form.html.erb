@@ -1,0 +1,28 @@
+<%= fields_for :project_specific_field_project, project_specific_field_project do |f| %>
+  <% if project_specific_field_project.safe_attribute?('project_id') && !@project %>
+  <p>
+    <%= f.label :project_id, ::ProjectSpecificFieldProject.human_attribute_name(:project_id) %>
+    <%= f.select :project_id, Project.allowed_to(:manage_project_specific_field_projects).collect{|x| [x.name, x.id]}, include_blank: true %>
+  </p>
+  <% end %>
+  <% if project_specific_field_project.safe_attribute?('name') %>
+  <p>
+    <%= f.label :name, ::ProjectSpecificFieldProject.human_attribute_name(:name) %>
+    <%= f.text_field :name %>
+  </p>
+  <% end %>
+  <% if project_specific_field_project.safe_attribute?('author_id') %>
+  <p>
+    <%= f.label :author_id, ::ProjectSpecificFieldProject.human_attribute_name(:author_id) %>
+    <%= f.select :author_id, User.all.collect{|x| [x.name, x.id]}.sort, include_blank: true %>
+  </p>
+  <% end %>
+  
+  <% custom_field_values = project_specific_field_project.visible_custom_field_values %>
+  <% custom_field_values.each do |value| %>
+  <p>
+    <%= custom_field_tag_with_label :project_specific_field_project, value %>
+  </p>
+  <% end %>
+  <p id="attachments_form"><label><%= l(:label_attachment_plural) %></label><%= render :partial => 'attachments/form', :locals => {:container => project_specific_field_project} %></p>
+<% end %>

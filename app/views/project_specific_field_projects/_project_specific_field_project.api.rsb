@@ -1,0 +1,16 @@
+local_assigns[:api].project_specific_field_project do
+  local_assigns[:api].id project_specific_field_project.id
+  local_assigns[:api].name project_specific_field_project.name
+  local_assigns[:api].project_id project_specific_field_project.project_id
+  local_assigns[:api].author_id project_specific_field_project.author_id
+  local_assigns[:api].created_at project_specific_field_project.created_at
+  local_assigns[:api].updated_at project_specific_field_project.updated_at
+  render_api_custom_values project_specific_field_project.visible_custom_field_values, local_assigns[:api]
+  local_assigns[:api].array :attachments do
+    project_specific_field_project.attachments.each do |attachment|
+      render_api_attachment attachment, local_assigns[:api]
+    end
+  end if include_in_api_response?('attachments')
+
+  call_hook :helper_render_api_project_specific_field_project, { api: local_assigns[:api], project_specific_field_project: project_specific_field_project }
+end

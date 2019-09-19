@@ -1,0 +1,24 @@
+# English strings go here for Rails i18n
+de:
+  label_project_specific_project_custom_field_plural: Projektspezifische benutzerdefinierte Felder
+  field_share_with_subprojects: Mit Unterprojekten teilen
+  activerecord:
+    attributes:
+      project_specific_field_project:
+        name: Name
+        field_project_specific_field_project_project: Projekt
+        field_project_specific_field_project_author: Autor
+        field_project_specific_field_project_created_at: Erstellt am
+        field_project_specific_field_project_updated_at: Aktualisiert am
+  easy_query:
+    name:
+      project_specific_field_project_query: Projektspezifische Projektfelder
+  heading_project_specific_field_project_new: Neues projektspezifisches Projektfeld
+  heading_project_specific_field_project_edit: Projektspezifisches Projektfeld bearbeiten
+  button_project_specific_field_project_new: Neues projektspezifisches Projektfeld
+  label_project_specific_field_projects: Projektspezifische Projektfelder
+  label_project_specific_field_project: Projektspezifische Projektfeld
+  permission_view_project_specific_field_projects: Projektspezifische Projektfelder anzeigen
+  permission_manage_project_specific_field_projects: Projektspezifische Projektfelder verwalten
+  title_project_specific_field_project_new: Projektspezifische Projektfelder verwalten
+  label_filter_group_project_specific_field_project_query: ProjectSpecificFieldProject

@@ -1,0 +1,21 @@
+<ul>
+<% if @project_specific_field_project -%>
+  <li><%= context_menu_link l(:button_edit), edit_project_specific_field_project_path(@project_specific_field_project), class: 'icon icon-edit', disabled: !@can[:edit] %></li>
+<% end %>
+<% if @safe_attributes.include? 'status' -%>
+  <li class="folder">
+    <a href="#" class="submenu icon icon-project-status" onclick="return false;"><%= l(:field_status) -%></a>
+    <ul>
+      <% ProjectSpecificFieldProject.statuses.keys.each do |s| -%>
+        <li>
+          <%= context_menu_link l("project_specific_field_project.statuses.#{s}"), bulk_update_project_specific_field_project_path(id: @project_specific_field_project_ids, project_specific_field_project: {status: s}, back_url: @back), method: :put,
+                                  selected: (@selected[:status] == s), disabled: !@can[:edit], confirm: l(:text_are_you_sure) %>
+        </li>
+      <% end -%>
+    </ul>
+  </li>
+  <% end %>
+  <li><%= context_menu_link l(:button_delete), project_specific_field_project_path(id: @project_specific_field_project_ids, back_url: @back), method: :delete, data: {confirm: l(:text_are_you_sure)}, class: 'icon icon-del', disabled: !@can[:delete] %></li>
+
+  <%= call_hook(:view_project_specific_field_projects_context_menu_end, {project_specific_field_project: @project_specific_field_project, project_specific_field_projects: @project_specific_field_projects, can: @can, back: @back, project: @project}) %>
+</ul>

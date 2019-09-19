@@ -1,7 +1,7 @@
 <div class="box tabular">   
     <fieldset><legend><%=l(:label_tracker_plural)%></legend>
     <% @project.trackers.sorted.all.each do |tracker| %>
-      <%= check_box_tag "p_spec_issue_custom_field[tracker_ids][]",
+      <%= check_box_tag "project_custom_field[tracker_ids][]",
                         tracker.id,
                         (@custom_field.trackers.include? tracker),
                         :id => "custom_field_tracker_ids_#{tracker.id}" %>
@@ -9,7 +9,7 @@
         <%= h(tracker.name) %>
       </label>
     <% end %>
-    <%= hidden_field_tag "p_spec_issue_custom_field[tracker_ids][]", '' %>
+    <%= hidden_field_tag "project_custom_field[tracker_ids][]", '' %>
     </fieldset>
     &nbsp;
     <p><%= f.check_box :share_with_subprojects %></p>
@@ -19,20 +19,20 @@
       <p>
         <label><%= l(:field_visible) %></label>
         <label class="block">
-          <%= radio_button_tag 'p_spec_issue_custom_field[visible]', 1, @custom_field.visible?, :id => 'p_spec_issue_custom_field_visible_on' %>
+          <%= radio_button_tag 'project_custom_field[visible]', 1, @custom_field.visible?, :id => 'project_custom_field_visible_on' %>
           <%= l(:label_visibility_public) %>
         </label>
         <label class="block">
-          <%= radio_button_tag 'p_spec_issue_custom_field[visible]', 0, !@custom_field.visible?, :id => 'p_spec_issue_custom_field_visible_off' %>
+          <%= radio_button_tag 'project_custom_field[visible]', 0, !@custom_field.visible?, :id => 'project_custom_field_visible_off' %>
           <%= l(:label_visibility_roles) %>:
         </label>
         <% Role.givable.sorted.each do |role| %>
 	  <label class="block custom_field_role" style="padding-left:2em;">
-	    <%= check_box_tag 'p_spec_issue_custom_field[role_ids][]', role.id, @custom_field.roles.include?(role) %>
+	    <%= check_box_tag 'project_custom_field[role_ids][]', role.id, @custom_field.roles.include?(role) %>
 	    <%= role.name %>
 	  </label>
         <% end %>
-        <%= hidden_field_tag 'p_spec_issue_custom_field[role_ids][]', '' %>
+        <%= hidden_field_tag 'project_custom_field[role_ids][]', '' %>
       </p>
     <% end %>
 </div>
@@ -40,10 +40,10 @@
 <% if CustomField.method_defined? :roles %>
   <%= javascript_tag do %>
   function toggleCustomFieldRoles(){
-    var checked = $("#p_spec_issue_custom_field_visible_on").is(':checked');
+    var checked = $("#project_custom_field_visible_on").is(':checked');
     $('.custom_field_role input').attr('disabled', checked);
   }
-  $("#p_spec_issue_custom_field_visible_on, #p_spec_issue_custom_field_visible_off").change(toggleCustomFieldRoles);
+  $("#project_custom_field_visible_on, #project_custom_field_visible_off").change(toggleCustomFieldRoles);
   $(document).ready(toggleCustomFieldRoles);
   <% end %>
 <% end %>

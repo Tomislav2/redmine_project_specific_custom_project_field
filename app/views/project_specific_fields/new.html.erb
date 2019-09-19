@@ -6,7 +6,7 @@
 <% end %>
 
 <%= javascript_tag do %>
-$('#p_spec_issue_custom_field_field_format').change(function(){
+$('#project_custom_field_field_format').change(function(){
   $.ajax({
     url: '<%= url_for(:action => :new, :format => 'js') %>',
     type: 'get',

@@ -1,0 +1,20 @@
+<%= title @project_specific_field_project %>
+<div class="project">
+  <table class="attributes">
+    <%= project_fields_rows do |rows| %>
+      <% rows.left ::ProjectSpecificFieldProject.human_attribute_name(:name), format_object(@project_specific_field_project.name) %>
+      <% rows.right ::ProjectSpecificFieldProject.human_attribute_name(:author_id), format_object(@project_specific_field_project.author_id) %>
+    <% end %>
+      <hr />
+    <%= render partial: 'redmine_extensions/custom_field_rows', :locals => { :custom_field_values => @project_specific_field_project.visible_custom_field_values } %>
+    <%= call_hook(:view_project_specific_field_projects_show_details_bottom, :project_specific_field_project => @project_specific_field_project) %>
+  </table>
+  <% if @project_specific_field_project.attachments.any? -%>
+    <hr />
+    <%= link_to_attachments @project_specific_field_project, :thumbnails => true %>
+  <% end %>
+</div>
+<% ### PAGE CUSTOMS ########################################################## %>
+<% content_for :sidebar do %>
+  <%= render :partial => 'project_specific_field_projects/sidebar' %>
+<% end %>

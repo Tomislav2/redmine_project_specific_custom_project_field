@@ -1,0 +1,19 @@
+<%= title l(:heading_project_specific_field_project_edit) %>
+
+<%= form_for([@project, @project_specific_field_project], html: {multipart: true, id: 'project_specific_field_project_form', class: 'tabular', remote: request.xhr?}) do |f| %>
+  <%= error_messages_for @project_specific_field_project %>
+
+  <div class="box">
+    <%= render partial: 'form', locals: {project_specific_field_project: @project_specific_field_project} %>
+  </div>
+
+  <% if !request.xhr? %>
+  <p>
+    <%= submit_tag l(:button_update), title: l(:button_update) %>
+  </p>
+  <% end %>
+<% end %>
+<% ### PAGE CUSTOMS ########################################################## %>
+<% content_for :sidebar do %>
+  <%= render :partial => 'project_specific_field_projects/sidebar' %>
+<% end %>

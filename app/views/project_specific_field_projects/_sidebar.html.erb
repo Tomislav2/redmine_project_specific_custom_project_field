@@ -1,0 +1,9 @@
+<ul>
+<% if @project_specific_field_project && !@project_specific_field_project.new_record? %>
+  <li><%= link_to l(:button_edit), edit_polymorphic_path([@project, @project_specific_field_project]), title: l(:button_edit), class: 'icon icon-edit button' %></li>
+<% end %>
+<% if @project_specific_field_project.nil? %>
+  <li><%= link_to l(:button_project_specific_field_project_new), new_polymorphic_path([@project, :project_specific_field_project]), title: l(:title_project_specific_field_project_new), class: 'icon icon-add button button-positive' %></li>
+<% end %>
+  <li><%= link_to l(:label_project_specific_field_projects), polymorphic_path([@project, :project_specific_field_projects], set_filter: '1'), title: l(:label_project_specific_field_projects), class: 'icon icon-folder button' %></li>
+</ul>
