@@ -1,0 +1,8 @@
+en:
+  label_custom_field_take_care_when_edit: Take care when edit this custom field
+  error_can_not_create_project: This project cannot be created
+  label_project_template: Project template
+  label_project_templates: Project templates
+  label_project_template_new: New project template
+  text_project_template_destroy_confirmation: Are you sure you want to delete this project template and related data?
+  field_is_for_all: For all projects

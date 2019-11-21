@@ -1,0 +1,8 @@
+en:
+  label_custom_field_take_care_when_edit: Vorsicht beim Bearbeiten
+  error_can_not_create_project: Dieses Projekt kann nicht angelegt werden.
+  label_project_template: Projekttemplate
+  label_project_templates: Projekttemplates
+  label_project_template_new: Neues Projekttemplate
+  text_project_template_destroy_confirmation: Sind Sie sicher, dass Sie das Projekttemplate löschen wollen?
+  field_is_for_all_templates: Für alle Projekttemplates

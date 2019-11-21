@@ -1,0 +1,10 @@
+<% if params[:parent_id] == "templates"  %>
+  <%= title l(:label_project_template_new) %>
+<% else %>
+  <%= title l(:label_project_new) %>
+<% end %>
+<%= labelled_form_for @project, :html => {:multipart => true} do |f| %>
+<%= render :partial => 'form_template', :locals => { :f => f } %>
+<%= submit_tag l(:button_create) %>
+<%= submit_tag l(:button_create_and_continue), :name => 'continue' %>
+<% end %>

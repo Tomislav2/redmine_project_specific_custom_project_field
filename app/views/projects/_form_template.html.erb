@@ -1,0 +1,304 @@
+<% if !get_parent_is_template(@project) && params[:authenticity_token] && !params[:identifier] && !params[:name] && !@project.identifier_frozen? %>
+  <%= error_messages_for 'project' %>
+<% else %>
+  <%= error_messages_for 'project' %>
+<% end %>
+<% @templates_project = Project.find('templates') %>
+<% @project.custom_field_values.each do |value| %>
+  <% if value.custom_field.id == 18 %>
+    <%#= custom_field_tag_with_label :project, value %>
+    <!--suppress ES6ConvertVarToLetConst -->
+    <p>
+      <!--suppress HtmlUnknownAttribute -->
+
+      <% if params[:parent_id] == "templates"  %>
+        <select title="" name="project[custom_field_values][18]" id="project_custom_field_values_18" class="list_cf">
+          <option value="">--- <%= l(:actionview_instancetag_blank_option) %> ---</option>
+          <%= @templates_project.children.visible.to_a.collect{|p| '<option value="'+ p.identifier + '">' + p.name + '</option>'}.join("").html_safe %>
+        </select>
+        <% @position = /\d+/.match(@templates_project.children.visible.to_a.last.identifier).try(:[], 0).to_i %>
+        <% @position+=1 %>
+        <% @current_name = "Template" + @position.to_s %>
+        <% @current_identifier = "Template" + @position.to_s %>
+        <% @current_identifier = @current_identifier.downcase %>
+         <script type="text/javascript">
+          $('#project_custom_field_values_18').append('<option selected="selected" value="<%= @current_identifier %>"><%= @current_name %></option>');
+         </script>
+      <% else %>
+        <select title="" name="project[custom_field_values][18]" id="project_custom_field_values_18" class="list_cf">
+          <option value="">--- <%= l(:actionview_instancetag_blank_option) %> ---</option>
+          <%= @templates_project.children.visible.to_a.collect{|p| '<option value="'+ p.identifier + '">' + p.name + '</option>'}.join("").html_safe %>
+        </select>
+        <script type="text/javascript">
+            var current_template = '';
+            var custom_template =  $('#project_custom_field_values_18');
+            <% if get_parent(@project)&.identifier == 'templates' %>
+            current_template = '<%=@project.name %>';
+            custom_template.addClass('disabled').attr('readonly','readonly').prop('readonly',true).on('mousedown',function(event){
+                event.preventDefault();
+                return false;
+            });
+            <% else %>
+            current_template = '<%=value.to_s.downcase %>';
+            <% end %>
+            // var value = '';
+            // var index = -1;
+            custom_template.find('>option').each(function(){
+                var $this = $(this);
+                if($this.text().toLowerCase() === current_template){
+                    $this.attr('selected','selected').prop('selected',true);
+                    // value = $this.attr('value');
+                    // index = $this.index();
+                }
+            });
+            // custom_template.val(value);
+            // custom_template.prop('selectedIndex',index);
+        </script>
+      <% end %>
+    </p>
+  <% end %>
+<% end %>
+
+<!--suppress UnreachableCodeJS -->
+<script type="text/javascript">
+    function domReady (fn, context) {
+        function onReady (event) {
+            document.removeEventListener('DOMContentLoaded', onReady);
+            fn.call(context || window, event);
+        }
+        document.addEventListener('DOMContentLoaded', onReady);
+    }
+    window.custom_template = null;
+    domReady(function(){
+        var custom_template = $('#project_custom_field_values_18'),
+            form = $(custom_template.get(0).form),
+            parent_is_template = <%= get_parent_is_template(@project) %>,
+            templateId = $.trim(custom_template.val()).toLowerCase(),
+            parentTemplateId = $.trim('<%= @project && @project.parent && @project.parent.identifier? %>').toLowerCase(),
+            search = (location.search?location.search : '');
+        window.custom_template = custom_template;
+        // console.log('SEKTION 2');
+        // console.log(templateId);
+        if(!templateId){
+            templateId = parentTemplateId;
+            if(!templateId){
+                templateId = $.trim(custom_template.find('>option').eq(1).val()).toLowerCase();
+            }
+        }
+        // console.log('SEKTION 3');
+        // console.log(templateId);
+        <% if !@project.identifier_frozen? %>
+        search = search.replace('?project_template=1','').replace('&project_template=1','');
+        form.find('[name="continue"]').hide();
+        var formURI = location.search;
+<!--        form.find('[name="commit"]').on('click.custom',function(event){-->
+            <%# if params[:parent_id] == "templates"  %>
+<!--              return true;-->
+            <%# else %>
+<!--            event.preventDefault();-->
+<!--            return false;-->
+            <%# end %>
+<!--        });-->
+        // console.log('SEKTION 5');
+        // console.log(form.attr('action'));
+        if(
+            !parent_is_template &&
+            templateId &&
+            form.attr('action') !== '/project/' + templateId + '/copy_template' + search &&
+            form.attr('action') !== '/project/' + templateId + '/copy_template'
+        ){
+            console.log('SEKTION 1');
+            <% @project.custom_field_values.each do |value| %>
+              <% if value.custom_field.id == 18 && value.to_s != ""  %>
+                <%# logger.info("111 value.custom_field 111") %>
+                <%# logger.info(params) %>
+                <%# logger.info("value.to_s") %>
+                <%# logger.info(value.to_s) %>
+                <%# logger.info(value.value.downcase) %>
+                <%# logger.info("value.custom_field") %>
+                <%# logger.info(value.custom_field) %>
+                <%# logger.info("value.format") %>
+                <%# logger.info(value.custom_field.format) %>
+                custom_template.val("<%= value.to_s.downcase  %>");
+              <% end %>
+            <% end %>
+            console.log('VALUE 1: '+ custom_template.val());
+            //
+        }else{
+            <% if params[:parent_id] == "templates"  %>
+            form.attr('action',form.attr('action') + formURI);
+            <% end %>
+        }
+          <% if !get_parent_is_template(@project) && !params[:authenticity_token] %>
+              $('#project_name,#project_identifier').parent().hide();
+              $('#project_modules').hide();
+              templateId = $.trim(custom_template.val()).toLowerCase();
+              form.attr('action','/project/' + templateId + '/copy_template' + search);
+              console.log('SEKTION 2');
+              console.log('SEKTION 3+');
+              form.find('[name="commit"]').off('click.custom').on('click.custom',function(event){
+                  templateId = $.trim(custom_template.val()).toLowerCase();
+                  form.attr('action','/project/' + templateId + '/copy_template' + search);
+                  console.log('SEKTION 4');
+                  event.preventDefault();
+                  if(custom_template.val()){
+                      form.submit();
+                  }
+                  return false;
+              });
+          <% end %>
+        <% else %>
+          <% @project.custom_field_values.each do |value| %>
+            <% if value.custom_field.id == 18 && value.to_s != ""  %>
+              <%# logger.info("222 value.custom_field 222") %>
+              <%# logger.info("value.to_s") %>
+              <%# logger.info(value.to_s) %>
+              <%# logger.info(value.value.downcase) %>
+              <%# logger.info("value.custom_field") %>
+              <%# logger.info(value.custom_field) %>
+              <%# logger.info("value.format") %>
+              <%# logger.info(value.custom_field.format) %>
+              custom_template.val("<%= value.to_s.downcase %>");
+            <% end %>
+          <% end %>
+        <% end %>
+        console.log('VALUE 2: '+ custom_template.val());
+    });
+
+</script>
+
+<%
+
+  # noinspection RubySimplifyBooleanInspection
+  if params[:authenticity_token] || params[:project_template] || (@subprojects && get_parent_is_template(@subprojects.first)) || get_parent_is_template(@project) || @project.identifier_frozen?
+
+%>
+  <div class="box tabular">
+
+    <!--suppress CssUnusedSymbol -->
+    <style type="text/css">
+      .box > p > #project_identifier,
+      .box > p > #project_name,
+      .box > p > [for="project_name"],
+      .box > p > [for="project_identifier"] {
+        display: inline;
+      }
+      <% if @subprojects && get_parent_is_template(@subprojects.first) %>
+      #main-menu{
+        display: none !important;
+      }
+      <%  end %>
+    </style>
+    <% unless get_parent_is_template(@project) %>
+    <script type="text/javascript">
+        domReady(function(){
+            window.custom_template.off('change.custom').attr('onmousedown', 'return false').attr('readonly', 'readonly').attr('style','color:#999');
+        });
+    </script>
+    <%  end %>
+    <!--[form:project]-->
+    <% if params[:parent_id] == "templates" || get_parent(@project)&.identifier == 'templates'  %>
+      <% if get_parent(@project)&.identifier == 'templates' && @project.identifier_frozen? %>
+        <p><%= # noinspection RubyResolve
+               f.text_field :name, :required => true, :size => 60, :readonly => true, :class => 'disabled'  %></p>
+      <%  else %>
+        <p><%= # noinspection RubyResolve
+               f.text_field :name, :required => true, :size => 60, :value => @current_name, :readonly => true, :class => 'disabled' %></p>
+      <%  end %>
+    <%  else %>
+      <p><%= # noinspection RubyResolve
+             f.text_field :name, :required => true, :size => 60 %></p>
+    <%  end %>
+    <p><%= # noinspection RubyResolve
+           f.text_area :description, :rows => 8, :class => 'wiki-edit' %></p>
+    <% if params[:parent_id] == "templates"  %>
+    <p><%= # noinspection RubyResolve
+           f.text_field :identifier, :required => true, :size => 60,  :readonly => true, :class => 'disabled' , :maxlength => Project::IDENTIFIER_MAX_LENGTH, :value => @current_identifier %>
+      <% unless @project.identifier_frozen? %>
+        <em class="info"><%= l(:text_length_between, :min => 1, :max => Project::IDENTIFIER_MAX_LENGTH) %> <%= l(:text_project_identifier_info).html_safe %></em>
+      <% end %></p>
+    <%  else %>
+      <p><%= # noinspection RubyResolve
+             f.text_field :identifier, :required => true, :size => 60, :value => @project.identifier_frozen? ? @project.identifier : '',:readonly => @project.identifier_frozen?, :class => @project.identifier_frozen? ? 'disabled':'', :maxlength => Project::IDENTIFIER_MAX_LENGTH %>
+        <% unless @project.identifier_frozen? %>
+          <em class="info"><%= l(:text_length_between, :min => 1, :max => Project::IDENTIFIER_MAX_LENGTH) %> <%= l(:text_project_identifier_info).html_safe %></em>
+        <% end %></p>
+    <%  end %>
+    <p><%= # noinspection RubyResolve
+           f.text_field :homepage, :size => 60 %></p>
+    <p>
+      <%= # noinspection RubyResolve
+          f.check_box :is_public %>
+      <em class="info"><%= # noinspection RubyResolve
+                           Setting.login_required? ? l(:text_project_is_public_non_member) : l(:text_project_is_public_anonymous) %></em>
+    </p>
+
+    <% unless @project.allowed_parents.compact.empty? %>
+      <% if params[:parent_id] == "templates" || get_parent(@project)&.identifier == 'templates'  %>
+        <p><%= label(:project, :parent_id, l(:field_parent)) %><!--suppress HtmlUnknownAttribute -->
+          <select title="" name="project[parent_id]" id="project_parent_id" class="list_cf" onmousedown="return false" readonly="readonly" style="color:#999"><option value="<%=@templates_project.id %>" selected><%= l(:label_project_templates) %></option></select></p>
+      <% else %>
+        <p><%= label(:project, :parent_id, l(:field_parent)) %><%= parent_project_select_tag(@project) %></p>
+      <% end %>
+    <% end %>
+
+    <% if @project.safe_attribute? 'inherit_members' %>
+      <p><%= # noinspection RubyResolve
+             f.check_box :inherit_members %></p>
+    <% end %>
+
+    <%= wikitoolbar_for 'project_description' %>
+    <% @project.custom_field_values.each do |value| %>
+      <% if value.custom_field.id != 18 %>
+        <p><%= custom_field_tag_with_label :project, value %></p>
+      <% end %>
+    <% end %>
+    <%= # noinspection RubyResolve
+        call_hook(:view_projects_form, :project => @project, :form => f) %>
+  </div>
+<% end %>
+  <% if @project.safe_attribute?('enabled_module_names') %>
+    <fieldset class="box tabular" id="project_modules"><legend><%= toggle_checkboxes_link('#project_modules input[type="checkbox"]') %><%= l(:label_module_plural) %></legend>
+      <% Redmine::AccessControl.available_project_modules.each do |m| %>
+        <% if @project.module_enabled?(m) ||  get_parent_is_template(@project) || @project.identifier_frozen? %>
+          <label class="floating">
+            <% if params[:authenticity_token] || params[:project_template] || get_parent_is_template(@project) || @project.identifier_frozen? %>
+              <%= check_box_tag 'project[enabled_module_names][]', m, @project.module_enabled?(m), :id => "project_enabled_module_names_#{m}" %>
+            <% else %>
+              <%= check_box_tag 'project[enabled_module_names][]', m, @project.module_enabled?(m), :id => "project_enabled_module_names_#{m}", :disabled => 'disabled' %>
+            <% end %>
+            <%= l_or_humanize(m, :prefix => "project_module_") %>
+          </label>
+        <% end %>
+      <% end %>
+      <%= hidden_field_tag 'project[enabled_module_names][]', '' %>
+    </fieldset>
+  <% end %>
+  <!--[eoform:project]-->
+<%
+
+  # noinspection RubySimplifyBooleanInspection
+  if params[:authenticity_token] || params[:project_template] || get_parent_is_template(@project) || @project.identifier_frozen?
+
+%>
+  <% unless @project.identifier_frozen? %>
+    <% content_for :header_tags do %>
+      <%= # noinspection RailsParamDefResolve
+          javascript_include_tag 'project_identifier' %>
+    <% end %>
+  <% end %>
+
+  <% if !User.current.admin? && @project.inherit_members? && @project.parent && User.current.member_of?(@project.parent) %>
+    <script type="text/javascript">
+        domReady(function(){
+        $("#project_inherit_members").change(function(){
+          if (!$(this).is(':checked')) {
+            if (!confirm("<% escape_javascript(l(:text_own_membership_delete_confirmation)) %>")) {
+              $("#project_inherit_members").attr("checked", true);
+            }
+          }
+        });
+      });
+    </script>
+  <% end %>
+<% end %>
