@@ -1,8 +1,14 @@
 en:
   label_custom_field_take_care_when_edit: Vorsicht beim Bearbeiten
   error_can_not_create_project: Dieses Projekt kann nicht angelegt werden.
-  label_project_template: Projekttemplate
-  label_project_templates: Projekttemplates
+  label_project_template: Projekt Template
+  label_project_templates: Projekt Templates
+  label_project_templat_names: Projekt Template Namen
+  label_project_field: Projektfeld
   label_project_template_new: Neues Projekttemplate
   text_project_template_destroy_confirmation: Sind Sie sicher, dass Sie das Projekttemplate löschen wollen?
   field_is_for_all_templates: Für alle Projekttemplates
+  label_project_template_change_confirmation: Sind Sie sicher, dass Sie das Projekttemplate wechseln wollen?\nNur gemeinsame Felder und einstellungen bleiben unberührt - alle anderen Informationen werden unwiederruflich gelöscht !\nWenn sie nicht sicher sind, klicken Sie jetzt auf Abbrechen und fragen Sie bitte Ihren Administrator um Rat!
+  label_project_template_custom_field: Benutzerdefiniertes Feld für Projekttemplates
+  default_assign_missing_project_template_custom_field: Benutzerdefiniertes Feld für Projekttemplates anlegen
+  notice_successful_update_template: Template Erfolgreich aktualisiert.

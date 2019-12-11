@@ -1,4 +1,10 @@
 <%= labelled_form_for @project, :html => {:multipart => true} do |f| %>
   <%= render :partial => 'form_template', :locals => { :f => f } %>
-<%= submit_tag l(:button_save) %>
+  <%= submit_tag l(:button_save) %>
+  <% if @project.is_dirty == true %>
+    <%= hidden_field_tag 'project[was_dirty]', @project.id, :id => "project_was_dirty_#{@project.id}", :readonly => 'readonly' %>
+    <script type="text/javascript">
+        $('#project_modules').parent('form').find('>[type="submit"]').trigger('click');
+    </script>
+  <% end %>
 <% end %>

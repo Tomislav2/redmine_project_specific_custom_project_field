@@ -15,7 +15,6 @@
 </fieldset>
 <% end %>
 &nbsp;
-
 <% if @projects.any? %>
   <div class="autoscroll">
     <table class="list">
@@ -27,9 +26,11 @@
         <th></th>
       </tr></thead>
       <tbody>
-      <% project_template_tree(@projects, :init_level => true) do |project, level| %>
+      <% @settings = Setting.plugin_redmine_project_specific_custom_project_fields %>
+      <% project_template_tree(Project.status(1).sorted, :init_level => true) do |project, level| %>
         <tr class="<%= project.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
-          <td class="name"><span><%= link_to_project_settings(project, {}, :title => project.short_description) %></span></td>
+          <td class="name"><span><% project.name = level > 0 ? @settings['template_custom_names'][project.identifier] : project.name %>
+            <%=link_to_project_settings(project, {}, :title => project.short_description) %></span></td>
           <td class="identity"><span><%= identity_link_to_project_settings(project, {}, :title => project.short_description) %></span></td>
           <td><%= checked_image project.is_public? %></td>
           <td><%= format_date(project.created_on) %></td>
@@ -47,6 +48,7 @@
     <table class="list">
       <thead><tr>
         <th><%=l(:label_project)%></th>
+        <th><%=l(:label_project_template)%></th>
         <th><%=l(:field_is_public)%></th>
         <th><%=l(:field_created_on)%></th>
         <th></th>
@@ -55,6 +57,7 @@
       <% project_tree(@projects, :init_level => true) do |project, level| %>
         <tr class="<%= project.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
           <td class="name"><span><%= link_to_project_settings(project, {}, :title => project.short_description) %></span></td>
+          <td class="project"><span><% project.custom_field_values.each do |value| %><% if value.custom_field.id == 85 %><%= link_to value, :controller => 'projects', :action => 'settings', :id => value %><% end %><% end %></span></td>
           <td><%= checked_image project.is_public? %></td>
           <td><%= format_date(project.created_on) %></td>
           <td class="buttons">

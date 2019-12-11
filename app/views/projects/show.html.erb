@@ -32,9 +32,12 @@
   <% unless @project.homepage.blank? %>
     <li><span class="label"><%=l(:field_homepage)%>:</span> <%= link_to_if uri_with_safe_scheme?(@project.homepage), @project.homepage, @project.homepage %></li>
   <% end %>
-  <% render_custom_field_values(@project) do |custom_field, formatted| %>
-    <li class="cf_<%= custom_field.id %>"><span class="label"><%= custom_field.name %>:</span> <%= formatted %></li>
-  <% end %>
+    <% @settings = Setting.plugin_redmine_project_specific_custom_project_fields %>
+    <% render_custom_field_values(@project) do |custom_field, formatted| %>
+      <% if custom_field.id != @settings['custom_field_id'].to_i %>
+        <li class="cf_<%= custom_field.id %>"><span class="label"><%= custom_field.name %>:</span> <%= formatted %></li>
+      <% end %>
+    <% end %>
   </ul>
   <% end %>
 
@@ -120,7 +123,11 @@
     <% else %>
       <h3 class="icon icon-projects"><%=l(:label_subproject_plural)%></h3>
     <% end %>
+    <% if get_parent_is_template(@subprojects.first) %>
+      <%= @subprojects.collect{|p| link_to @settings['template_custom_names'][p.identifier], project_path(p), :class => p.css_classes}.join(", ").html_safe %>
+    <% else %>
     <%= @subprojects.collect{|p| link_to p, project_path(p), :class => p.css_classes}.join(", ").html_safe %>
+    <% end %>
   </div>
   <% end %>
 

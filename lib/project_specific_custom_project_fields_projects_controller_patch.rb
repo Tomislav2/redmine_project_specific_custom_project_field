@@ -17,20 +17,25 @@ module ProjectSpecificCustomProjectFields
         # noinspection RubyResolve
         unloadable
 
-        alias_method :settings_custom_without_settings, :settings
         alias_method :settings, :settings_custom_with_settings
+        alias_method :update, :update_custom_with_update
       end
     end
-
     # noinspection RubyTooManyInstanceVariablesInspection
     module InstanceMethods
       # noinspection RubyResolve,DuplicatedCode
       def settings_custom_with_settings
-        logger.info("SETTINGS NEW:")
-        logger.info(params)
+        # logger.info("SETTINGS NEW:")
+        # logger.info(params)
         if params[:id]  == 'templates'
           redirect_to project_path(@project)
         end
+        logger.info("PARAMS:")
+        logger.info(params)
+        if params[:is_dirty]
+          @project.set_is_dirty = true
+        end
+        logger.info(@project.is_dirty)
         @issue_custom_fields = IssueCustomField.sorted.to_a
         @issue_category ||= IssueCategory.new
         @member ||= @project.members.new
@@ -43,27 +48,38 @@ module ProjectSpecificCustomProjectFields
 
       # noinspection RubyResolve
       def copy_template
-        logger.info("COPY EXTENDED:")
+        # logger.info("COPY EXTENDED:")
         @issue_custom_fields = IssueCustomField.sorted.to_a
         @trackers = Tracker.sorted.to_a
         @source_project = Project.find(params[:id])
         @project = Project.copy_from(@source_project)
         @project.identifier = Project.next_identifier if Setting.sequential_project_identifiers?
+        # logger.info("PARAMS:")
+        # logger.info(params)
         if params[:commit]
-          logger.info("PARAMS:")
-          logger.info(params)
           Mailer.with_deliveries(params[:notifications] == '1') do
-            logger.info("BEFORE NEW:")
+            # logger.info("BEFORE NEW:")
            # @project = Project.new
             project_params = params[:project]
             # project_params[:template_id] = params[:id]
-            logger.info("AFTER NEW:")
-            logger.info(project_params)
+            # logger.info("AFTER NEW:")
+            # logger.info(project_params)
             @project.safe_attributes = project_params
-            logger.info("BEFORE COPY TRY:")
+            # logger.info("BEFORE COPY TRY:")
             if @project.copy(@source_project, :only => params[:only])
               flash[:notice] = l(:notice_successful_create)
-              logger.info("NO-ERROR:")
+              # logger.info("NO-ERROR:")
+              @source_project.custom_values.each do |custom_value|
+                custom_value.customized_id = @source_project.id
+                record = CustomValue.new(
+                    #:id => custom_value.id,
+                    :customized_type => custom_value.customized_type,
+                    :customized_id => @source_project.id,
+                    :custom_field_id =>custom_value.custom_field_id,
+                    :value =>custom_value.value
+                )
+                record.save
+              end
               redirect_to settings_project_path(@project)
             elsif !@project.new_record?
               # Project was created
@@ -75,10 +91,113 @@ module ProjectSpecificCustomProjectFields
             end
           end
         end
-        @subprojects = @project.children.visible.to_a
+        if @project && @project.children
+          @subprojects = @project.children.visible.to_a
+        end
       rescue ActiveRecord::RecordNotFound
         # source_project not found
         render_404
+      end
+
+      def update_custom_with_update
+        @project.safe_attributes = params[:project]
+        @template = nil
+        @settings = Setting.plugin_redmine_project_specific_custom_project_fields
+        @project.set_is_dirty = false
+        if @project.identifier.first(8) != 'template'
+          @project.custom_field_values.each do |value|
+            if value.custom_field.id == @settings['custom_field_id'].to_i
+              @template_id = value.to_s.downcase
+              if @template_id.to_s != ''
+                @template = Project.find(@template_id)
+                is_dirty = false
+                if @project.enabled_module_names.sort.to_a != @template.enabled_module_names.sort.to_a
+                  @project.enabled_module_names = @template.enabled_module_names
+                  is_dirty = true
+                end
+                if @project.trackers.sort.to_a != @template.trackers.sort.to_a
+                  @project.trackers = @template.trackers
+                  is_dirty = true
+                end
+
+                @project.set_is_dirty = is_dirty
+
+                if @project.is_dirty
+                  @project.save
+                end
+                break
+              end
+            end
+          end
+        else
+          logger.info("PROJECTS")
+          # noinspection RubyResolve
+          CustomValue.where(:value => @project.identifier,:customized_type => 'Project').each do |value|
+            # noinspection RubyResolve
+            @_project = Project.find_by_id(value.customized_id)
+
+            is_dirty = false
+
+            if @_project.enabled_module_names.sort.to_a != @project.enabled_module_names.sort.to_a
+              @_project.enabled_module_names = @project.enabled_module_names
+              is_dirty = true
+            end
+            if @_project.trackers.sort.to_a != @project.trackers.sort.to_a
+              @_project.trackers = @project.trackers
+              is_dirty = true
+            end
+
+            @project.set_is_dirty = is_dirty
+
+            if @project.is_dirty
+              @project.save
+            end
+          end
+        end
+
+        if @project.is_dirty && @project.identifier.first(8) != 'template'
+          # logger.info('ZWISCCHEN 123')
+          # logger.info(@project.is_dirty)
+          respond_to do |format|
+            url = { :controller => 'projects', :id => @project.id, :action => 'settings', :is_dirty => true }
+            format.html {
+              redirect_to url
+            }
+            format.api  { render_api_ok }
+          end
+        else
+          if @project.save
+            # logger.info('TESTJACCKPOT 123')
+            respond_to do |format|
+              format.html {
+                flash[:notice] = l(:notice_successful_update)
+                redirect_to settings_project_path(@project, params[:tab])
+              }
+              format.api  { render_api_ok }
+            end
+          else
+            if params[:project][:was_dirty]
+              # logger.info('OOOOH 123')
+              respond_to do |format|
+                format.html {
+                  flash[:notice] = l(:notice_successful_update_template)
+                  settings
+                  render :action => 'settings'
+                }
+                format.api  { render_validation_errors(@project) }
+              end
+            else
+              # logger.info('OOOOH 123')
+              respond_to do |format|
+                format.html {
+                  settings
+                  render :action => 'settings'
+                }
+                format.api  { render_validation_errors(@project) }
+              end
+            end
+          end
+        end
       end
     end
   end

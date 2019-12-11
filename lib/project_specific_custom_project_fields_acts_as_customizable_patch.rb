@@ -5,13 +5,14 @@ module Redmine
       extend Customizable
       # noinspection DuplicatedCode
       def available_custom_fields
+        @settings = Setting.plugin_redmine_project_specific_custom_project_fields
         classname = self.class.name
         extra_condition = ''
         if classname == 'Project'
           project_id_column = self.id
           custom_values=project.custom_values.collect {|v| v.clone}
           custom_values.each do |custom_value|
-            if custom_value.custom_field_id == 18
+            if custom_value.custom_field_id == @settings['custom_field_id'].to_i
               project_template = Project.find_by_identifier([custom_value.value.downcase])
               if
               !self.id ||

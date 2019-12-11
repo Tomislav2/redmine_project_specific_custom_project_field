@@ -1,0 +1,72 @@
+<fieldset>
+  <%= # noinspection RubyResolve
+      content_tag(:legend, l(:default_assign_text_settings)) %>
+  <% if @settings['custom_field_id'].blank? %>
+    <%= # noinspection RubyResolve
+        content_tag(:p, l(:label_project_template_custom_field)) %>
+  <% else %>
+    <%= # noinspection RubyResolve
+        content_tag(:p, l(:label_project_template_custom_field), :ondblclick=>"location.href='/custom_fields/#{@settings['custom_field_id']}/edit'", :style => 'color:#505050 !important; text-decoration:none !important') %>
+  <% end %>
+
+  <p>
+    <%= # noinspection RubyResolve
+        content_tag(:label, l(:label_project_field)) %>
+
+    <%-
+      projects = ProjectCustomField.visible.order('name ASC')
+      selected = @settings['custom_field_id'] unless @settings['custom_field_id'].blank?
+      selected ||= []
+    -%>
+
+    <% if projects.empty? %>
+    <%=  link_to(l(:default_assign_missing_project_template_custom_field),
+                  :controller => 'custom_fields', :action => 'new', :utf8=>'✓', :type=>'ProjectCustomField') %>
+    <% end %>
+    <% if @settings['custom_field_id'].blank? %>
+      <%= # noinspection RubyResolve
+          select_tag("settings[custom_field_id]",
+                   ('<option value="">--- ' + l(:actionview_instancetag_blank_option) + ' ---</option>').html_safe  +
+                   # noinspection RubyResolve
+                   options_from_collection_for_select(projects, :id, :name,
+                   unless selected.blank?
+                   Integer(selected)
+                   end
+                   ),
+                   :multiple => false) %>
+    <% else %>
+      <%= # noinspection RubyResolve
+          select_tag("settings[custom_field_id]",
+                    ('<option value="">--- ' + l(:actionview_instancetag_blank_option) + ' ---</option>').html_safe   +
+                    # noinspection RubyResolve
+                    options_from_collection_for_select(projects, :id, :name,
+                    unless selected.blank?
+                    Integer(selected)
+                    end
+                    ),
+                    :multiple => false, :readonly => true, :class => 'disabled', :onmousedown => 'return false') %>
+    <% end %>
+    <%= link_to("","javascript:_f=function(){var _s=jQuery('#settings_custom_field_id').get(0);_s.selectedIndex = 0;_s.removeAttribute('readonly');_s.removeAttribute('onmousedown');_s.removeAttribute('class');window.Event.defaultPrevented;};_k=function(){window.Event.defaultPrevented;};if(window.confirm('Sind Sie sich ganz sicher zu wissen, welch Auswirkung diese Änderung nach sich ziehen kann?\\nWenn Sie lieber vorher Tomislav um Rat fragen wollen, klicken Sie bitte auf \"Abbrechen\"'))_f();else _k();", :class => 'icon icon-del' , :id => 'remove_settings_custom_field_id') %>
+  </p>
+
+
+</fieldset>
+</div>
+
+<div class="box tabular settings" style="margin-top: -11px">
+<fieldset>
+  <%=content_tag(:legend, l(:label_project_templat_names)) %>
+  <% ctr = 0 %>
+  <% project_template_tree(Project.status(1).sorted, :init_level => true) do |project, level| %>
+    <% if level > 0 %>
+      <% new_value = @settings['template_custom_names'] && @settings['template_custom_names'][project.identifier] ? @settings['template_custom_names'][project.identifier] : project %>
+      <% new_value.to_s.trim!  %>
+      <% current_id = "settings_template_custom_names_#{ctr+=1}" %>
+      <div class="level-<%= level %>" data-origin-value="<%=project %>" data-new-value="<%=new_value %>">
+        <%=label_tag current_id, project.identifier, :style => "margin-left:-6px;padding: 3px 3px 0;" %>
+        <span> </span>
+        <%=text_field "settings[template_custom_names]", project.identifier, {:value => new_value, :id => current_id } %>
+      </div>
+    <% end %>
+  <% end %>
+</fieldset>

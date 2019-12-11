@@ -10,10 +10,10 @@
     <th></th>
   </tr></thead>
   <tbody>
+  <% @settings = Setting.plugin_redmine_project_specific_custom_project_fields %>
   <% (@custom_fields_by_type[tab[:name]] || []).sort.each do |custom_field| -%>
-    <% back_url = custom_fields_path(:tab => tab[:name]) %>
     <tr>
-      <td class="name" ondblclick="location.href='<%=edit_custom_field_path(custom_field)%>'" title="<%= l(:label_custom_field_take_care_when_edit) %>"><% if custom_field.id.to_s != "18" %><%= link_to custom_field.name, edit_custom_field_path(custom_field) %><% else %><%= custom_field.name %><% end %></td>
+      <td class="name" ondblclick="location.href='<%=edit_custom_field_path(custom_field)%>'" title="<%= l(:label_custom_field_take_care_when_edit) %>"><% if custom_field.id.to_s != @settings['custom_field_id'] %><%= link_to custom_field.name, edit_custom_field_path(custom_field) %><% else %><%= custom_field.name %><% end %></td>
       <td><%= l(custom_field.format.label) %></td>
       <td><%= checked_image custom_field.is_required? %></td>
       <% if tab[:name] == 'IssueCustomField' %>
@@ -22,7 +22,7 @@
       <% end %>
       <td class="buttons">
         <%= reorder_handle(custom_field, :url => custom_field_path(custom_field), :param => 'custom_field') %>
-        <% if custom_field.id.to_s != "18" %>
+        <% if custom_field.id.to_s != @settings['custom_field_id'] %>
           <%= delete_link custom_field_path(custom_field) %>
         <% else %>
           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;

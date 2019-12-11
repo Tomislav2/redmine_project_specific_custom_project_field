@@ -2,8 +2,21 @@
 module ApplicationHelper
   extend ApplicationHelper
   # Renders the projects index
+  # @param [ProjectSpecificCustomProjectFields::Project::project_template_tree] projects
   def render_project_hierarchy(projects)
-    render_project_nested_lists(projects) do |project|
+    logger.info("render project hierarchy".upcase)
+
+    _projects = []
+
+    projects.each do |project|
+      if project.identifier.downcase.first(8) == "template"
+        next
+      end
+      _projects << project
+    end
+
+    render_project_nested_lists(_projects) do |project|
+      logger.info(project.identifier.downcase)
       s = link_to_project(project, {}, :class => "#{project.css_classes} #{User.current.member_of?(project) ? 'icon icon-fav my-project' : nil}")
       if project.description.present?
         s << content_tag('div', textilizable(project.short_description, :project => project), :class => 'wiki description')
@@ -12,7 +25,7 @@ module ApplicationHelper
     end
   end
   # Generates a link to a project settings if active
-  # noinspection RubyInstanceMethodNamingConvention
+  # @return String
   def identity_link_to_project_settings(project, options={}, html_options=nil)
     if project.active?
       link_to project.identifier, settings_project_path(project, options), html_options
@@ -22,7 +35,7 @@ module ApplicationHelper
       link_to project.identifier, project_path(project, options), html_options
     end
   end
-
+  # @return String
   def render_boards_tree(boards, parent=nil, level=0, &block)
     selection = boards.select {|b| b.parent == parent}
     return '' if selection.empty?
@@ -35,7 +48,9 @@ module ApplicationHelper
     end
     content_tag('div', s, :class => 'sort-level')
   end
-
+  # @param [ProjectSpecificCustomProjectFields::Project::project_template_tree] projects
+  # @param [Hash] options
+  # @return String
   def project_tree_options_for_select(projects, options = {})
     s = ''.html_safe
     if (blank_text = options[:include_blank])
@@ -61,15 +76,19 @@ module ApplicationHelper
     s.html_safe
   end
   # Yields the given block for each project with its level in the tree
-  #
-  # Wrapper for Project#project_template_tree
+  # @param [ProjectSpecificCustomProjectFields::Project::project_template_tree] projects
+  # @param [Hash] options
+  # @param [Hash] block
+  # @return String
   def project_template_tree(projects, options={}, &block)
     Project.project_template_tree(projects, options, &block)
   end
+  # @return Mixed
   def get_parent_id
     (params[:project] && params[:project][:parent_id]) || params[:parent_id]
   end
-
+  # @param [Project] project
+  # @return Project
   def get_parent(project)
     selected = project&.parent || nil
     # retrieve the requested parent project
@@ -79,9 +98,17 @@ module ApplicationHelper
     end
     selected
   end
-
+  # @param [Project] project
+  # @return Bool
   def get_parent_is_template(project)
     get_parent_id == 'templates' || get_parent(project)&.identifier == 'templates'
   end
-
 end
+class String
+  # @param [String] @self
+  # @return String
+  def trim!
+    self.strip! || self
+  end
+end
+
