@@ -21,6 +21,12 @@ fields or managing an existing field.
 2. Migrate the database
 3. Restart the server
 
+
+## Demo
+
+<https://demo.webentwicklung.co>
+
+
 ## License
 
 This program is free software: you can redistribute it and/or modify 
