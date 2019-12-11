@@ -2,15 +2,12 @@ require 'redmine'
 
 Rails.logger.info 'o:=>'
 Rails.logger.info 'o:=> Starting Redmine Project Specific Custom Project Fields Plugin for Redmine'
-Redmine::MenuManager.map :top_menu do |menu|
-  #empty
-end
 
 Redmine::Plugin.register :redmine_project_specific_custom_project_fields do
   name 'Redmine Project Specific Custom Project Fields plugin'
   author 'Tomislav Kramaric'
   version '0.1'
-  description 'Add the ability to create project specific custom project fields'
+  description 'Add the ability to create project-specific custom project fields and use them to create project templates'
   url 'https://github.com/Tomislav2/redmine_project_specific_custom_project_field'
   author_url 'https://www.tomislav.net'
   requires_redmine :version_or_higher => '4'
