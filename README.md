@@ -1,7 +1,5 @@
 # redmine_project_specific_custom_project_field
 
-Please dont use, it doesnt work yet without core hacks !!!
-
 Master branch will only run on 4.x
 
 
@@ -9,7 +7,10 @@ Master branch will only run on 4.x
 
 Add a <b>project</b> custom field specific to an individual project and it's subprojects.  It
 can be managed as part of a project's settings.  The field will not be visible 
-on any other project.
+on any other project
+
+Add the ability to create project-specific custom project fields and use them to create project
+templates
  
 A 'Manage Custom Fields' permission is added which will allow creating new 
 fields or managing an existing field.
