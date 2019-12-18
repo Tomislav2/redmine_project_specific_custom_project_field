@@ -19,9 +19,16 @@ module ProjectSpecificCustomProjectFields
 
         alias_method :settings, :settings_custom_with_settings
         alias_method :update, :update_custom_with_update
+
+        alias_method :authorize_custom_without_authorize, :authorize
+        alias_method :authorize, :authorize_custom_with_authorize
+
+        alias_method :require_login_custom_without_require_login, :require_login
+        alias_method :require_login, :require_login_custom_with_require_login
       end
     end
-    # noinspection RubyTooManyInstanceVariablesInspection
+
+    #noinspection RubyTooManyInstanceVariablesInspection,RubyInstanceMethodNamingConvention
     module InstanceMethods
       # noinspection RubyResolve,DuplicatedCode
       def settings_custom_with_settings
@@ -59,29 +66,59 @@ module ProjectSpecificCustomProjectFields
         if params[:commit]
           Mailer.with_deliveries(params[:notifications] == '1') do
             # logger.info("BEFORE NEW:")
-           # @project = Project.new
+            # @project = Project.new
             project_params = params[:project]
             # project_params[:template_id] = params[:id]
             # logger.info("AFTER NEW:")
             # logger.info(project_params)
             @project.safe_attributes = project_params
-            # logger.info("BEFORE COPY TRY:")
+            custom_values = @source_project.custom_values.collect {|v| v.clone}
+            #logger.info("BEFORE COPY TRY:")
+            #logger.info(custom_values)
+            #logger.info("BEFORE COPY TRY:")
             if @project.copy(@source_project, :only => params[:only])
+              #logger.info("IN NEW:")
+              #logger.info(@source_project.custom_values)
               flash[:notice] = l(:notice_successful_create)
-              # logger.info("NO-ERROR:")
-              @source_project.custom_values.each do |custom_value|
-                custom_value.customized_id = @source_project.id
-                record = CustomValue.new(
-                    #:id => custom_value.id,
-                    :customized_type => custom_value.customized_type,
-                    :customized_id => @source_project.id,
-                    :custom_field_id =>custom_value.custom_field_id,
-                    :value =>custom_value.value
-                )
-                record.save
+              if Project.find(params[:id]).custom_values.collect {|v| v.clone} != custom_values
+                #logger.info("RENEW TEMPLATE:")
+                custom_values.each do |custom_value|
+                  custom_value.customized_id = @source_project.id
+                  record = CustomValue.new(
+                      #:id => custom_value.id,
+                      :customized_type => custom_value.customized_type,
+                      :customized_id => @source_project.id,
+                      :custom_field_id =>custom_value.custom_field_id,
+                      :value =>custom_value.value
+                  )
+                  record.save
+                end
               end
+              #logger.info("AFTER COPY TRY:")
+              #logger.info(@source_project.custom_values)
+              #logger.info(custom_values)
               redirect_to settings_project_path(@project)
             elsif !@project.new_record?
+              #logger.info("NOT NEW:")
+              #logger.info(Project.find(params[:id]).custom_values.collect {|v| v.clone})
+              #logger.info(custom_values)
+              if Project.find(params[:id]).custom_values.collect {|v| v.clone} != custom_values
+                #logger.info("RENEW TEMPLATE:")
+                custom_values.each do |custom_value|
+                  custom_value.customized_id = @source_project.id
+                  record = CustomValue.new(
+                      #:id => custom_value.id,
+                      :customized_type => custom_value.customized_type,
+                      :customized_id => @source_project.id,
+                      :custom_field_id =>custom_value.custom_field_id,
+                      :value =>custom_value.value
+                  )
+                  record.save
+                end
+              end
+              #logger.info("NOT NEW AFTER:")
+              #logger.info(Project.find(params[:id]).custom_values.collect {|v| v.clone})
+              #logger.info(custom_values)
               # Project was created
               # But some objects were not copied due to validation failures
               # (eg. issues from disabled trackers)
@@ -197,6 +234,23 @@ module ProjectSpecificCustomProjectFields
               end
             end
           end
+        end
+      end
+      #
+      def require_login_custom_with_require_login
+        if params[:action] == "copy_template" && params[:controller] == "projects"
+          false
+        else
+          require_login_custom_without_require_login
+        end
+      end
+
+      # Authorize the user for the requested action
+      def authorize_custom_with_authorize(ctrl = params[:controller], action = params[:action], global = false)
+        if action == "copy_template" && ctrl == "projects"
+          true
+        else
+          authorize_custom_without_authorize(ctrl, action, global)
         end
       end
     end

@@ -29,7 +29,7 @@
       <% @settings = Setting.plugin_redmine_project_specific_custom_project_fields %>
       <% project_template_tree(Project.status(1).sorted, :init_level => true) do |project, level| %>
         <tr class="<%= project.css_classes %> <%= level > 0 ? "idnt idnt-#{level}" : nil %>">
-          <td class="name"><span><% project.name = level > 0 ? @settings['template_custom_names'][project.identifier] : project.name %>
+          <td class="name"><span><% project.name = @settings['template_custom_names'] && level > 0 ? @settings['template_custom_names'][project.identifier] : project.name %>
             <%=link_to_project_settings(project, {}, :title => project.short_description) %></span></td>
           <td class="identity"><span><%= identity_link_to_project_settings(project, {}, :title => project.short_description) %></span></td>
           <td><%= checked_image project.is_public? %></td>

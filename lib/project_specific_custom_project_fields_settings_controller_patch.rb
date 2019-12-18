@@ -26,7 +26,7 @@ module ProjectSpecificCustomProjectFields
     module InstanceMethods
 
       def plugin_with_plugin
-        if request.post? and params[:id] == 'redmine_project_specific_custom_project_fields'
+        if request.post? and params[:id] == 'redmine_project_specific_custom_project_fields' && params[:settings][:template_custom_names]
           params[:settings][:template_custom_names].each do |key|
             if key.first && key.second
 =begin

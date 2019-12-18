@@ -5,7 +5,7 @@
 <% end %>
 
 <% @settings = Setting.plugin_redmine_project_specific_custom_project_fields %>
-<% @templates_project = Project.find('templates') %>
+<% @templates_project = find_template_project %>
 <% @project.custom_field_values.each do |value| %>
   <% if value.custom_field.id == @settings['custom_field_id'].to_i %>
     <% @template_id = value.to_s.downcase %>
@@ -18,59 +18,61 @@
     <!--suppress ES6ConvertVarToLetConst -->
     <p>
       <!--suppress HtmlUnknownAttribute -->
-      <% if params[:parent_id] == "templates"  %>
-        <select title="" name="project[custom_field_values][<%=@settings['custom_field_id']  %>]" id="project_custom_field_values_<%=@settings['custom_field_id']  %>" class="list_cf">
-          <option value="">--- <%= l(:actionview_instancetag_blank_option) %> ---</option>
-          <%= @templates_project.children.visible.to_a.collect{|p| '<option value="'+ p.identifier + '">' + p.name + '</option>'}.join("").html_safe %>
-        </select>
-        <% @position = @templates_project.children.visible.to_a.count %>
-        <% @position+=1 %>
-        <% @current_name = "Template" + @position.to_s %>
-        <% @current_name.trim! %>
-        <% @current_identifier = "Template" + @position.to_s %>
-        <% @current_identifier = @current_identifier.downcase %>
-         <script type="text/javascript">
-          $('#project_custom_field_values_<%=@settings['custom_field_id'] %>').append('<option selected="selected" value="<%= @current_identifier %>"><%= @current_name %></option>');
-         </script>
-      <% else %>
-        <select title="" name="project[custom_field_values][<%=@settings['custom_field_id']  %>]" id="project_custom_field_values_<%=@settings['custom_field_id']  %>" class="list_cf">
-          <option value="">--- <%= l(:actionview_instancetag_blank_option) %> ---</option>
-          <%= @templates_project.children.visible.to_a.collect{|p| '<option value="'+ p.identifier + '">' + p.name + '</option>'}.join("").html_safe %>
-        </select>
-        <script type="text/javascript">
-            var current_template = '';
-            var custom_template =  $('#project_custom_field_values_<%=@settings['custom_field_id']  %>');
-            <% if get_parent(@project)&.identifier == 'templates' %>
-            current_template = '<%=@current_identifier %>';
-            custom_template.addClass('disabled').attr('readonly','readonly').prop('readonly',true).on('mousedown',function(event){
-                event.preventDefault();
-                return false;
-            });
-            <% else %>
-            current_template = '<%=value.to_s.downcase %>';
-            <% end %>
-            // var value = '';
-            // var index = -1;
-            custom_template.find('>option').each(function(){
-                var $this = $(this);
-                if($this.val().toLowerCase() === current_template){
-                    $this.attr('selected','selected').prop('selected',true);
+      <% if @templates_project && @templates_project.children  %>
+        <% if params[:parent_id] == "templates"  %>
+          <select title="" name="project[custom_field_values][<%=@settings['custom_field_id']  %>]" id="project_custom_field_values_<%=@settings['custom_field_id']  %>" class="list_cf">
+            <option value="">--- <%= l(:actionview_instancetag_blank_option) %> ---</option>
+            <%= @templates_project.children.visible.to_a.collect{|p| '<option value="'+ p.identifier + '">' + p.name + '</option>'}.join("").html_safe %>
+          </select>
+          <% @position = @templates_project.children.visible.to_a.count %>
+          <% @position+=1 %>
+          <% @current_name = "Template" + @position.to_s %>
+          <% @current_name.trim! %>
+          <% @current_identifier = "Template" + @position.to_s %>
+          <% @current_identifier = @current_identifier.downcase %>
+           <script type="text/javascript">
+            $('#project_custom_field_values_<%=@settings['custom_field_id'] %>').append('<option selected="selected" value="<%= @current_identifier %>"><%= @current_name %></option>');
+           </script>
+        <% else %>
+          <select title="" name="project[custom_field_values][<%=@settings['custom_field_id']  %>]" id="project_custom_field_values_<%=@settings['custom_field_id']  %>" class="list_cf">
+            <option value="">--- <%= l(:actionview_instancetag_blank_option) %> ---</option>
+            <%= @templates_project.children.visible.to_a.collect{|p| '<option value="'+ p.identifier + '">' + p.name + '</option>'}.join("").html_safe %>
+          </select>
+          <script type="text/javascript">
+              var current_template = '';
+              var custom_template =  $('#project_custom_field_values_<%=@settings['custom_field_id']  %>');
+              <% if get_parent(@project)&.identifier == 'templates' %>
+              current_template = '<%=@current_identifier %>';
+              custom_template.addClass('disabled').attr('readonly','readonly').prop('readonly',true).on('mousedown',function(event){
+                  event.preventDefault();
+                  return false;
+              });
+              <% else %>
+              current_template = '<%=value.to_s.downcase %>';
+              <% end %>
+              // var value = '';
+              // var index = -1;
+              custom_template.find('>option').each(function(){
+                  var $this = $(this);
+                  if($this.val().toLowerCase() === current_template){
+                      $this.attr('selected','selected').prop('selected',true);
 
-                    var form = $this.closest('form'),
-                        _action = form.attr('action').replace(/\/template\d+\//,'/'+ current_template + '/'),
-                        action = form.attr('action');
+                      var form = $this.closest('form'),
+                          _action = form.attr('action').replace(/\/template\d+\//,'/'+ current_template + '/'),
+                          action = form.attr('action');
 
-                    form.attr('action', _action);
-                    if(_action !== action){
-                        form.trigger('submit');
-                    }
-                    // value = $this.attr('value');
-                    // index = $this.index();
-                }
-            });
-            // custom_template.val(value);
-            // custom_template.prop('selectedIndex',index);
-        </script>
+                      form.attr('action', _action);
+                      if(_action !== action){
+                          form.trigger('submit');
+                      }
+                      // value = $this.attr('value');
+                      // index = $this.index();
+                  }
+              });
+              // custom_template.val(value);
+              // custom_template.prop('selectedIndex',index);
+          </script>
+        <% end %>
       <% end %>
     </p>
   <% end %>
@@ -189,7 +191,7 @@
     <!--[form:project]-->
     <% if params[:parent_id] == "templates" || get_parent(@project)&.identifier == 'templates'  %>
       <% if get_parent(@project)&.identifier == 'templates' && @project.identifier_frozen? %>
-        <% @current_name = @settings['template_custom_names'][@project.identifier] ?@settings['template_custom_names'][@project.identifier]: @current_name %>
+        <% @current_name = @settings['template_custom_names'] && @settings['template_custom_names'][@project.identifier] ?@settings['template_custom_names'][@project.identifier]: @current_name %>
         <% @current_name.to_s.trim! %>
         <p>
           <% if @current_name %>

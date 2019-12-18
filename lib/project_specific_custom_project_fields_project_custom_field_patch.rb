@@ -1,7 +1,7 @@
 
 class ProjectCustomField < CustomField
 
-  # noinspection RailsParamDefResolve
+  # noinspection RailsParamDefResolve,RubyResolve
   has_and_belongs_to_many :projects, :join_table => "#{table_name_prefix}custom_fields_projects#{table_name_suffix}", :foreign_key => "custom_field_id", :autosave => true
   safe_attributes 'project_ids'
   # Returns the error messages for the given value
@@ -11,7 +11,7 @@ class ProjectCustomField < CustomField
     errs = format.validate_custom_value(custom_value)
     logger.info("VALIDATE CUSTOM VALUE !!!!!!")
     is_template = false
-    if custom_value.customized
+    if custom_value.customized&.identifier
       logger.info(custom_value.customized.identifier)
       is_template = custom_value.customized.identifier.first(8) == 'template'
     end
@@ -37,9 +37,14 @@ class ProjectCustomField < CustomField
     end
     errs
   end
+
+  # @param [Integer] project_key
+  # @param [User] user
+  # @param [Integer] id_column
   def visibility_by_project_condition(project_key=nil, user=User.current, id_column=nil)
     sql = super
     id_column ||= id
+    # noinspection RubyResolve
     project_condition = " ( is_for_all = 1 AND id = #{id_column} )" +
         " OR #{Project.table_name}.id IN (SELECT project_id FROM #{table_name_prefix}custom_fields_projects#{table_name_suffix} WHERE custom_field_id = #{id_column})"
     "((#{sql}) AND (#{project_condition}))"
